@@ -24,6 +24,10 @@ export function orderHistory () {
 
 export function allOrders () {
   return async (req: Request, res: Response, next: NextFunction) => {
+    const user = security.authenticatedUsers.from(req)
+    if (!user || user.data.role !== security.roles.admin) {
+      return res.status(403).json({ error: 'Forbidden' })
+    }
     const order = await ordersCollection.find()
     res.status(200).json({ status: 'success', data: order.reverse() })
   }
@@ -31,6 +35,10 @@ export function allOrders () {
 
 export function toggleDeliveryStatus () {
   return async (req: Request, res: Response, next: NextFunction) => {
+    const user = security.authenticatedUsers.from(req)
+    if (!user || user.data.role !== security.roles.admin) {
+      return res.status(403).json({ error: 'Forbidden' })
+    }
     const deliveryStatus = !req.body.deliveryStatus
     const eta = deliveryStatus ? '0' : '1'
     await ordersCollection.update({ _id: req.params.id }, { $set: { delivered: deliveryStatus, eta } })
