@@ -126,6 +126,15 @@ import { serveChallengesWithCodeSnippet, serveCodeSnippet, checkVulnLines } from
 import { ensureFileIsPassed, handleZipFileUpload, checkUploadSize, checkFileType, handleXmlUpload, handleYamlUpload } from './routes/fileUpload'
 
 const app = express()
+app.use(
+    '/rest/user/login',
+    rateLimit({
+      windowMs: 15*60*1000,
+      max: 20,
+      standardHeaders: true,
+      legacyHeaders: false
+    })
+)
 const server = new http.Server(app)
 
 // errorhandler requires us from overwriting a string property on it's module which is a big no-no with esmodules :/
